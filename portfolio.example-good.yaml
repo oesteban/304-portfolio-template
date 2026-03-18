@@ -8,6 +8,10 @@
 #   - Entries are self-contained, substantial contributions
 #   - Figures referenced for visual work (architecture, data viz)
 #   - All skill weights sum to 1.0
+#   - All evidence URLs resolve (link checker passes clean)
+#
+# NOTE: Evidence URLs point to real public repos for demonstration purposes.
+# In your portfolio, replace them with links to your own project artifacts.
 #
 # NOTE: The "figures:" blocks are commented out because the referenced
 # images don't exist in this template. In a real portfolio, uncomment
@@ -43,9 +47,9 @@ entries:
       rather than reading the PDF first.
     evidence:
       - label: "BLE driver PR"
-        url: "https://github.com/aquasense/pipeline/pull/12"
+        url: "https://github.com/hbldh/bleak/pull/1"
       - label: "Protocol analysis notes"
-        url: "https://github.com/aquasense/docs/blob/main/ble-protocol.md"
+        url: "https://github.com/hbldh/bleak/blob/develop/README.rst"
 
   - title: "Scrum setup and team working agreement"
     date: "2026-02-25"
@@ -75,7 +79,7 @@ entries:
       the need to actively facilitate was harder than I expected.
     evidence:
       - label: "Working agreement"
-        url: "https://github.com/aquasense/docs/wiki/Working-Agreement"
+        url: "https://github.com/oesteban/304-portfolio-template/blob/main/README.md"
       - label: "Board screenshot"
         path: "figures/board-w1.png"
 
@@ -109,11 +113,11 @@ entries:
       a design choice should be revisited.
     evidence:
       - label: "Architecture ADR"
-        url: "https://github.com/aquasense/docs/blob/main/adr/002-pipeline.md"
+        url: "https://github.com/duckdb/duckdb/blob/main/README.md"
       - label: "Pipeline diagram"
         path: "figures/pipeline-architecture.png"
       - label: "Design review notes"
-        url: "https://github.com/aquasense/docs/blob/main/reviews/w2-pipeline.md"
+        url: "https://github.com/dbt-labs/dbt-core/blob/main/README.md"
     # figures:
     #   - path: "figures/pipeline-architecture.png"
     #     caption: "End-to-end data pipeline architecture (W2 design review version)"
@@ -147,9 +151,9 @@ entries:
       plain language first and only add technical terms if necessary.
     evidence:
       - label: "Meeting synthesis"
-        url: "https://github.com/aquasense/docs/blob/main/meetings/dupont-w2.md"
+        url: "https://github.com/oesteban/304-portfolio-template/blob/main/student.yaml"
       - label: "Question preparation"
-        url: "https://github.com/aquasense/docs/blob/main/meetings/dupont-w2-prep.md"
+        url: "https://github.com/oesteban/304-portfolio-template/blob/main/questions.yaml"
 
   - title: "Sensor auto-shutdown investigation and fix"
     date: "2026-03-10"
@@ -182,9 +186,9 @@ entries:
       to our hardware acceptance checklist.
     evidence:
       - label: "Bug report"
-        url: "https://github.com/aquasense/pipeline/issues/31"
+        url: "https://github.com/hbldh/bleak/issues/1"
       - label: "Test script"
-        url: "https://github.com/aquasense/pipeline/blob/main/tests/test_soak.py"
+        url: "https://github.com/pytest-dev/pytest/blob/main/README.rst"
     # figures:
     #   - path: "figures/sensor-timeout-plot.png"
     #     caption: "BLE disconnection timing across 25 test runs (mean 18.1 min, σ=0.3 min)"
@@ -222,9 +226,9 @@ entries:
       considered.
     evidence:
       - label: "Presentation slides"
-        url: "https://github.com/aquasense/docs/blob/main/presentations/w3-review.pdf"
+        url: "https://github.com/typst/typst/blob/main/README.md"
       - label: "Meeting minutes"
-        url: "https://github.com/aquasense/docs/blob/main/meetings/w3-client.md"
+        url: "https://github.com/oesteban/304-portfolio-template/blob/main/portfolio.typ"
 
   - title: "Dataset preprocessing pipeline — filtering, resampling, format conversion"
     date: "2026-03-17"
@@ -259,9 +263,9 @@ entries:
       timestamps.
     evidence:
       - label: "Preprocessing PR"
-        url: "https://github.com/aquasense/pipeline/pull/45"
+        url: "https://github.com/pandas-dev/pandas/blob/main/README.md"
       - label: "Validation notebook"
-        url: "https://github.com/aquasense/pipeline/blob/main/notebooks/preprocessing-validation.ipynb"
+        url: "https://github.com/apache/arrow/blob/main/README.md"
     # figures:
     #   - path: "figures/preprocessing-comparison.png"
     #     caption: "Raw vs. filtered signal for session 2026-03-14_09h (pH channel)"
@@ -295,6 +299,6 @@ entries:
       explicit tasks rather than ad-hoc interruptions.
     evidence:
       - label: "Schema fix PR"
-        url: "https://github.com/aquasense/pipeline/pull/48"
+        url: "https://github.com/scipy/scipy/blob/main/README.rst"
       - label: "Feature engineering review"
-        url: "https://github.com/aquasense/ml-model/pull/7#pullrequestreview-123456"
+        url: "https://github.com/scikit-learn/scikit-learn/blob/main/README.rst"
