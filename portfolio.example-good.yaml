@@ -7,6 +7,7 @@
 #   - Reflections contain transferable lessons, not just competency paraphrase
 #   - Entries are self-contained, substantial contributions
 #   - Figures referenced for visual work (architecture, data viz)
+#   - All skill weights sum to 1.0
 #
 # NOTE: The "figures:" blocks are commented out because the referenced
 # images don't exist in this template. In a real portfolio, uncomment
@@ -16,9 +17,10 @@ entries:
   - title: "BLE sensor protocol analysis and driver implementation"
     date: "2026-02-24"
     sprint: "W1"
-    competencies:
-      - analyser
-      - implementer
+    skills:
+      cs_engineer: 0.7
+      data_engineer: 0.3
+      professionalism: 0.0
     what: >
       Reverse-engineered the AquaSense probe's BLE GATT service table
       to identify the correct characteristic UUIDs for pH, dissolved oxygen,
@@ -48,9 +50,10 @@ entries:
   - title: "Scrum setup and team working agreement"
     date: "2026-02-25"
     sprint: "W1"
-    competencies:
-      - faciliter
-      - argumenter
+    skills:
+      cs_engineer: 0.0
+      data_engineer: 0.0
+      professionalism: 1.0
     what: >
       Facilitated the initial team meeting where we defined our working
       agreement: daily async standups on Slack, weekly 30-min sync,
@@ -79,9 +82,10 @@ entries:
   - title: "Data pipeline architecture design"
     date: "2026-03-03"
     sprint: "W2"
-    competencies:
-      - orchestrer
-      - concevoir
+    skills:
+      cs_engineer: 0.3
+      data_engineer: 0.7
+      professionalism: 0.0
     what: >
       Designed the end-to-end data pipeline: BLE acquisition → local
       SQLite buffer → nightly sync to PostgreSQL → dbt transformations →
@@ -117,9 +121,10 @@ entries:
   - title: "Expert meeting preparation and synthesis — Prof. Dupont (hydrology)"
     date: "2026-03-04"
     sprint: "W2"
-    competencies:
-      - communiquer
-      - appliquer
+    skills:
+      cs_engineer: 0.0
+      data_engineer: 0.5
+      professionalism: 0.5
     what: >
       Prepared 5 domain-specific questions for the meeting with
       Prof. Dupont (hydrology department) about water quality indicators
@@ -149,9 +154,10 @@ entries:
   - title: "Sensor auto-shutdown investigation and fix"
     date: "2026-03-10"
     sprint: "W3"
-    competencies:
-      - evaluer
-      - analyser
+    skills:
+      cs_engineer: 0.8
+      data_engineer: 0.2
+      professionalism: 0.0
     what: >
       Investigated why the AquaSense probe stops streaming after ~20
       minutes. Used Wireshark BLE captures to identify a connection
@@ -186,9 +192,10 @@ entries:
   - title: "Client demo — sprint review presentation"
     date: "2026-03-11"
     sprint: "W3"
-    competencies:
-      - communiquer
-      - argumenter
+    skills:
+      cs_engineer: 0.0
+      data_engineer: 0.0
+      professionalism: 1.0
     what: >
       Prepared and delivered the W3 sprint review presentation to the
       client (municipal water authority). Structured the demo around
@@ -222,9 +229,10 @@ entries:
   - title: "Dataset preprocessing pipeline — filtering, resampling, format conversion"
     date: "2026-03-17"
     sprint: "W4"
-    competencies:
-      - valoriser
-      - appliquer
+    skills:
+      cs_engineer: 0.2
+      data_engineer: 0.8
+      professionalism: 0.0
     what: >
       Built the preprocessing pipeline for the first two weeks of field
       data (1.2 GB raw, 847 MB after cleaning). Steps: (1) removed
@@ -261,9 +269,10 @@ entries:
   - title: "Cross-team data integration support"
     date: "2026-03-18"
     sprint: "W4"
-    competencies:
-      - valoriser
-      - critiquer
+    skills:
+      cs_engineer: 0.1
+      data_engineer: 0.6
+      professionalism: 0.3
     what: >
       Helped Team B (predictive model) integrate the preprocessed
       Parquet files into their training pipeline. Identified and fixed
