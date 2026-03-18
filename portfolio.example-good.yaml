@@ -6,7 +6,11 @@
 #   - Evidence is always present and varied (PRs, notebooks, docs, figures)
 #   - Reflections contain transferable lessons, not just competency paraphrase
 #   - Entries are self-contained, substantial contributions
-#   - Figures used for visual work (architecture, data viz)
+#   - Figures referenced for visual work (architecture, data viz)
+#
+# NOTE: The "figures:" blocks are commented out because the referenced
+# images don't exist in this template. In a real portfolio, uncomment
+# them and place your images in figures/.
 
 entries:
   - title: "BLE sensor protocol analysis and driver implementation"
@@ -106,9 +110,9 @@ entries:
         path: "figures/pipeline-architecture.png"
       - label: "Design review notes"
         url: "https://github.com/aquasense/docs/blob/main/reviews/w2-pipeline.md"
-    figures:
-      - path: "figures/pipeline-architecture.png"
-        caption: "End-to-end data pipeline architecture (W2 design review version)"
+    # figures:
+    #   - path: "figures/pipeline-architecture.png"
+    #     caption: "End-to-end data pipeline architecture (W2 design review version)"
 
   - title: "Expert meeting preparation and synthesis — Prof. Dupont (hydrology)"
     date: "2026-03-04"
@@ -175,9 +179,9 @@ entries:
         url: "https://github.com/aquasense/pipeline/issues/31"
       - label: "Test script"
         url: "https://github.com/aquasense/pipeline/blob/main/tests/test_soak.py"
-    figures:
-      - path: "figures/sensor-timeout-plot.png"
-        caption: "BLE disconnection timing across 25 test runs (mean 18.1 min, σ=0.3 min)"
+    # figures:
+    #   - path: "figures/sensor-timeout-plot.png"
+    #     caption: "BLE disconnection timing across 25 test runs (mean 18.1 min, σ=0.3 min)"
 
   - title: "Client demo — sprint review presentation"
     date: "2026-03-11"
@@ -250,9 +254,9 @@ entries:
         url: "https://github.com/aquasense/pipeline/pull/45"
       - label: "Validation notebook"
         url: "https://github.com/aquasense/pipeline/blob/main/notebooks/preprocessing-validation.ipynb"
-    figures:
-      - path: "figures/preprocessing-comparison.png"
-        caption: "Raw vs. filtered signal for session 2026-03-14_09h (pH channel)"
+    # figures:
+    #   - path: "figures/preprocessing-comparison.png"
+    #     caption: "Raw vs. filtered signal for session 2026-03-14_09h (pH channel)"
 
   - title: "Cross-team data integration support"
     date: "2026-03-18"
