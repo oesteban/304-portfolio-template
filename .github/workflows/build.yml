@@ -13,12 +13,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: typst-community/setup-typst@v4
-      - run: typst compile portfolio.typ portfolio.pdf
+      - name: Build example PDFs
+        run: |
+          echo '[]' > broken_links.yaml
+          cp portfolio.example-good.yaml portfolio.yaml
+          typst compile portfolio.typ portfolio-example-good.pdf
+          cp portfolio.example-bad.yaml portfolio.yaml
+          typst compile portfolio.typ portfolio-example-bad.pdf
       - uses: actions/upload-artifact@v4
         with:
-          name: portfolio
-          path: portfolio.pdf
+          name: portfolio-examples
+          path: portfolio-example-*.pdf
       - if: github.event_name == 'release'
         uses: softprops/action-gh-release@v2
         with:
-          files: portfolio.pdf
+          files: portfolio-example-*.pdf
