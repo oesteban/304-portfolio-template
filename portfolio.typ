@@ -1,0 +1,293 @@
+// Portfolio CV Template — Module 304 (Medical Informatics)
+// Reads structured YAML files and produces a professional A4 PDF.
+
+// ── Data loading ──────────────────────────────────────────────
+#let student       = yaml("student.yaml")
+#let portfolio     = yaml("portfolio.yaml")
+#let questions     = yaml("questions.yaml")
+#let broken-links  = yaml("broken_links.yaml")
+
+// ── Colour palette ────────────────────────────────────────────
+#let accent-cs   = rgb("#2563eb")   // blue
+#let accent-data = rgb("#059669")   // emerald
+#let accent-prof = rgb("#9333ea")   // purple
+#let accent-q    = rgb("#64748b")   // slate
+
+// ── Competency enum → axis mapping ──────────────────────────
+#let competency-axis = (
+  analyser:    "cs",
+  concevoir:   "cs",
+  implementer: "cs",
+  evaluer:     "cs",
+  valoriser:   "data",
+  orchestrer:  "data",
+  appliquer:   "data",
+  communiquer: "prof",
+  faciliter:   "prof",
+  argumenter:  "prof",
+  critiquer:   "prof",
+)
+
+#let competency-labels = (
+  analyser:    "Analyser un problème informatique complexe",
+  concevoir:   "Concevoir une solution théorique modélisée",
+  implementer: "Implémenter une approche théorique modélisée",
+  evaluer:     "Évaluer un système informatique",
+  valoriser:   "Valoriser des ensembles de données hétérogènes",
+  orchestrer:  "Orchestrer un processus de traitement de données",
+  appliquer:   "Appliquer l'ingénierie informatique aux données",
+  communiquer: "Communiquer clairement et efficacement",
+  faciliter:   "Adopter une posture professionnelle facilitante",
+  argumenter:  "Argumenter ses opinions et ses choix",
+  critiquer:   "Critiquer le déroulement d'une production",
+)
+
+#let axis-color = (cs: accent-cs, data: accent-data, prof: accent-prof)
+#let axis-label = (cs: "CS", data: "Data", prof: "Soft-skills")
+
+// ── Helper: derive axis weights from competencies list ──────
+#let derive-skills(comps) = {
+  let n = comps.len()
+  if n == 0 { return (cs_engineer: 0, data_engineer: 0, professionalism: 0) }
+  let cs = 0; let dt = 0; let pr = 0
+  for c in comps {
+    let ax = competency-axis.at(c, default: "cs")
+    if ax == "cs"   { cs += 1 }
+    if ax == "data" { dt += 1 }
+    if ax == "prof" { pr += 1 }
+  }
+  (cs_engineer: cs / n, data_engineer: dt / n, professionalism: pr / n)
+}
+
+// ── Page & text setup ─────────────────────────────────────────
+#set page(
+  paper: "a4",
+  margin: (top: 2cm, bottom: 2cm, left: 2cm, right: 2cm),
+  footer: context [
+    #set text(8pt, fill: luma(140))
+    #student.name — Module #student.module
+    #h(1fr)
+    #counter(page).display("1 / 1", both: true)
+  ],
+)
+
+#set text(font: ("Helvetica Neue", "Helvetica", "DejaVu Sans"), size: 10pt, lang: "en")
+#set par(justify: true, leading: 0.65em)
+
+// ── Helper: skill bar ─────────────────────────────────────────
+#let skill-bar(skills) = {
+  let raw = (
+    ("CS",          skills.at("cs_engineer",    default: 0), accent-cs),
+    ("Data",        skills.at("data_engineer",   default: 0), accent-data),
+    ("Soft-skills", skills.at("professionalism", default: 0), accent-prof),
+  )
+  // Convert to fractions
+  let segs = raw.map(((lbl, w, c)) => {
+    let frac = if type(w) == ratio { w } else { float(w) * 100% }
+    (lbl, frac, c)
+  }).filter(((_, frac, _)) => frac > 0%)
+  // Sort descending by weight
+  let segs = segs.sorted(key: ((_, frac, _)) => -frac / 1%)
+
+  set text(7pt, weight: "bold", fill: white)
+  box(width: 100%, height: 12pt, radius: 3pt, clip: true,
+    stack(dir: ltr,
+      ..segs.map(((lbl, frac, c)) => {
+        let pct = calc.round(frac / 1%)
+        box(width: frac, height: 12pt, fill: c,
+          align(center + horizon, text(lbl + " " + str(pct) + "%")))
+      })
+    )
+  )
+}
+
+// ── Helper: entry block ───────────────────────────────────────
+#let entry-block(e) = {
+  // Title row
+  grid(
+    columns: (1fr, auto),
+    align: (left, right),
+    text(weight: "bold", size: 11pt, e.title),
+    text(size: 9pt, fill: luma(100),
+      [#e.at("sprint", default: "") — #e.date]),
+  )
+  v(3pt)
+
+  // Skill weights — prefer competencies (new) over skills (legacy)
+  {
+    let skills = if "competencies" in e and e.competencies != none and e.competencies.len() > 0 {
+      derive-skills(e.competencies)
+    } else if "skills" in e {
+      e.skills
+    } else { none }
+    if skills != none {
+      skill-bar(skills)
+      // Warn if weights don't sum to 1.0 (tolerance ±0.05)
+      let total = (float(skills.at("cs_engineer", default: 0))
+               + float(skills.at("data_engineer", default: 0))
+               + float(skills.at("professionalism", default: 0)))
+      if calc.abs(total - 1.0) > 0.05 {
+        v(2pt)
+        text(size: 9pt, fill: rgb("#dc2626"),
+          [⚠ #text(size: 8pt, weight: "semibold")[(skills sum to #calc.round(total, digits: 2) instead of 1.0)]])
+      }
+    }
+  }
+  v(2pt)
+
+  // Competency pills
+  if "competencies" in e and e.competencies != none and e.competencies.len() > 0 {
+    for c in e.competencies {
+      let ax = competency-axis.at(c, default: "cs")
+      let col = axis-color.at(ax)
+      box(
+        inset: (x: 5pt, y: 2pt),
+        radius: 3pt,
+        fill: col.lighten(85%),
+        stroke: 0.5pt + col.lighten(40%),
+        text(size: 7.5pt, weight: "medium", fill: col.darken(15%), c),
+      )
+      h(3pt)
+    }
+    v(2pt)
+  }
+
+  // What
+  if "what" in e and e.what != none and e.what != "" {
+    text(weight: "semibold", size: 9pt, fill: luma(80), [What: ])
+    text(size: 9.5pt, e.what)
+    v(3pt)
+  } else {
+    text(size: 9pt, fill: rgb("#dc2626"),
+      [⚠ #text(size: 8pt, weight: "semibold")[(missing what)]])
+    v(3pt)
+  }
+
+  // Why
+  if "why" in e and e.why != none and e.why != "" {
+    text(weight: "semibold", size: 9pt, fill: luma(80), [Why: ])
+    text(size: 9.5pt, e.why)
+    v(3pt)
+  } else {
+    text(size: 9pt, fill: rgb("#dc2626"),
+      [⚠ #text(size: 8pt, weight: "semibold")[(missing why)]])
+    v(3pt)
+  }
+
+  // Reflection
+  if "reflection" in e and e.reflection != none and e.reflection != "" {
+    text(weight: "semibold", size: 9pt, fill: luma(80), [Reflection: ])
+    text(size: 9.5pt, e.reflection)
+    v(3pt)
+  } else {
+    text(size: 9pt, fill: rgb("#dc2626"),
+      [⚠ #text(size: 8pt, weight: "semibold")[(missing reflection)]])
+    v(3pt)
+  }
+
+  // Evidence links
+  if "evidence" in e and e.evidence != none and e.evidence.len() > 0 {
+    text(weight: "semibold", size: 9pt, fill: luma(80), [Evidence: ])
+    for ev in e.evidence {
+      let target = ev.at("url", default: ev.at("path", default: ""))
+      if target != "" and broken-links != none and target in broken-links {
+        text(size: 9pt, fill: rgb("#dc2626"),
+          [⚠ #ev.label #text(size: 8pt, weight: "semibold")[(broken link)]])
+        [ ]
+      } else if target != "" {
+        [#link(target)[#text(size: 9pt, fill: accent-cs, ev.label)]  ]
+      } else {
+        text(size: 9pt, ev.label)
+        [ ]
+      }
+    }
+    v(2pt)
+  } else {
+    text(size: 9pt, fill: rgb("#dc2626"),
+      [⚠ #text(size: 8pt, weight: "semibold")[(missing evidence)]])
+    v(2pt)
+  }
+
+  // Inline figures
+  if "figures" in e and e.figures != none and e.figures.len() > 0 {
+    v(4pt)
+    for fig in e.figures {
+      align(center,
+        block(width: 85%, {
+          image(fig.path, width: 100%)
+          if "caption" in fig and fig.caption != none and fig.caption != "" {
+            v(2pt)
+            text(size: 8pt, fill: luma(100), style: "italic", fig.caption)
+          }
+        })
+      )
+      v(4pt)
+    }
+  }
+}
+
+
+// ── Header ────────────────────────────────────────────────────
+#align(center)[
+  #text(size: 22pt, weight: "bold", student.name)
+  #v(2pt)
+  #text(size: 10pt, fill: luma(80), student.program)
+  #v(1pt)
+  #text(size: 10pt, fill: luma(80), [Module #student.module])
+  #v(1pt)
+  #text(size: 10pt, fill: luma(80), [Project: #student.project])
+  #v(1pt)
+  #text(size: 9pt, fill: luma(120), student.semester)
+]
+
+// ── Portfolio entries (flat, no section headings) ───────────
+#let entries = portfolio.at("entries", default: ())
+#if entries == none { entries = () }
+
+#for (i, e) in entries.enumerate() {
+  entry-block(e)
+  if i < entries.len() - 1 {
+    v(4pt)
+    line(length: 100%, stroke: 0.3pt + luma(200))
+    v(4pt)
+  }
+}
+
+#if entries.len() == 0 {
+  text(size: 9pt, fill: luma(140), style: "italic", [No entries yet.])
+}
+
+// ── Questions section ─────────────────────────────────────────
+#v(8pt)
+#line(length: 100%, stroke: 0.5pt + accent-q)
+#v(4pt)
+#text(size: 14pt, weight: "bold", fill: accent-q, "Hiring-Style Questions")
+#v(6pt)
+
+#let weeks = questions.at("weeks", default: ())
+#if weeks == none { weeks = () }
+#for w in weeks {
+  text(weight: "bold", size: 10pt, [Week #w.week])
+  v(2pt)
+  let items = w.at("items", default: ())
+  if items == none { items = () }
+  for (i, item) in items.enumerate() {
+    if type(item) == str {
+      text(size: 9.5pt, [#{i + 1}. *Q:* #item])
+      v(1pt)
+      text(size: 9pt, fill: rgb("#dc2626"), [   ⚠ #text(size: 8pt, weight: "semibold")[(missing answer)]])
+      v(1pt)
+    } else {
+      // Question with answer
+      text(size: 9.5pt, [#{i + 1}. *Q:* #item.question])
+      v(1pt)
+      if "answer" in item and item.answer != none and item.answer != "" {
+        text(size: 9pt, fill: luma(60), [   _A:_ #item.answer])
+      } else {
+        text(size: 9pt, fill: rgb("#dc2626"), [   ⚠ #text(size: 8pt, weight: "semibold")[(missing answer)]])
+      }
+      v(1pt)
+    }
+  }
+  v(4pt)
+}

@@ -1,0 +1,287 @@
+# Example: well-structured portfolio (fictional project "AquaSense")
+# Copy this file to portfolio.yaml to see how a strong portfolio renders.
+#
+# Key patterns demonstrated:
+#   - Every entry has substantive what/why/reflection
+#   - Evidence is always present and varied (PRs, notebooks, docs, figures)
+#   - Reflections contain transferable lessons, not just competency paraphrase
+#   - Entries are self-contained, substantial contributions
+#   - Figures used for visual work (architecture, data viz)
+
+entries:
+  - title: "BLE sensor protocol analysis and driver implementation"
+    date: "2026-02-24"
+    sprint: "W1"
+    competencies:
+      - analyser
+      - implementer
+    what: >
+      Reverse-engineered the AquaSense probe's BLE GATT service table
+      to identify the correct characteristic UUIDs for pH, dissolved oxygen,
+      and turbidity readings. Implemented a Python driver using bleak that
+      subscribes to notifications and parses the 12-byte payload into
+      calibrated SI units. Wrote unit tests covering all 6 known payload
+      variants documented in the vendor's PDF.
+    why: >
+      The vendor SDK only supports Windows/.NET; our pipeline runs on
+      Linux. Understanding the binary protocol at the byte level was
+      necessary to build a cross-platform acquisition layer. This is a
+      core CS-engineering task: decomposing a complex interface into a
+      clean abstraction that the rest of the team can use without
+      understanding BLE internals.
+    reflection: >
+      I initially trusted the vendor's documentation, but discovered two
+      undocumented payload variants during edge-case testing. Lesson:
+      always test with real hardware before freezing the protocol spec.
+      In hindsight, I should have started with a packet capture session
+      rather than reading the PDF first.
+    evidence:
+      - label: "BLE driver PR"
+        url: "https://github.com/aquasense/pipeline/pull/12"
+      - label: "Protocol analysis notes"
+        url: "https://github.com/aquasense/docs/blob/main/ble-protocol.md"
+
+  - title: "Scrum setup and team working agreement"
+    date: "2026-02-25"
+    sprint: "W1"
+    competencies:
+      - faciliter
+      - argumenter
+    what: >
+      Facilitated the initial team meeting where we defined our working
+      agreement: daily async standups on Slack, weekly 30-min sync,
+      rotating SM/PO roles. Created the GitHub Projects board with
+      columns matching our sprint workflow (Backlog → In Progress →
+      Review → Done). Documented the agreement in the repo wiki.
+    why: >
+      A clear working agreement reduces friction when disagreements arise
+      later. As the first Scrum Master, I needed to set a collaborative
+      tone while ensuring the process was lightweight enough that the team
+      would actually follow it. Arguing for async standups over daily
+      video calls required justifying the tradeoff (flexibility vs.
+      real-time communication).
+    reflection: >
+      The async standup format worked well for the first two weeks, but
+      I noticed that two teammates rarely posted updates. Next time, I
+      would add a simple "no update = blocker check-in" rule to catch
+      silent blockers earlier. Balancing my instinct to work alone with
+      the need to actively facilitate was harder than I expected.
+    evidence:
+      - label: "Working agreement"
+        url: "https://github.com/aquasense/docs/wiki/Working-Agreement"
+      - label: "Board screenshot"
+        path: "figures/board-w1.png"
+
+  - title: "Data pipeline architecture design"
+    date: "2026-03-03"
+    sprint: "W2"
+    competencies:
+      - orchestrer
+      - concevoir
+    what: >
+      Designed the end-to-end data pipeline: BLE acquisition → local
+      SQLite buffer → nightly sync to PostgreSQL → dbt transformations →
+      dashboard. Drew the architecture diagram (see figure) and wrote an
+      ADR justifying the choice of SQLite as the edge buffer over a
+      direct MQTT stream, based on our reliability requirements
+      (probe may lose connectivity for hours in field deployments).
+    why: >
+      Orchestrating a data pipeline from edge sensor to analytics
+      dashboard is the core Data-engineering competency. The design
+      needed to account for intermittent connectivity, out-of-order
+      timestamps, and a 500 Hz sampling rate that generates ~40 MB/day.
+      Modelling the pipeline as a DAG before coding prevented us from
+      coupling acquisition to transformation.
+    reflection: >
+      During the design review, a teammate pointed out that SQLite
+      write-locking could become a bottleneck if we later add a second
+      sensor. I added a note to the ADR about switching to DuckDB if
+      concurrent writes become necessary. This taught me the value of
+      documenting "decision boundaries" — the conditions under which
+      a design choice should be revisited.
+    evidence:
+      - label: "Architecture ADR"
+        url: "https://github.com/aquasense/docs/blob/main/adr/002-pipeline.md"
+      - label: "Pipeline diagram"
+        path: "figures/pipeline-architecture.png"
+      - label: "Design review notes"
+        url: "https://github.com/aquasense/docs/blob/main/reviews/w2-pipeline.md"
+    figures:
+      - path: "figures/pipeline-architecture.png"
+        caption: "End-to-end data pipeline architecture (W2 design review version)"
+
+  - title: "Expert meeting preparation and synthesis — Prof. Dupont (hydrology)"
+    date: "2026-03-04"
+    sprint: "W2"
+    competencies:
+      - communiquer
+      - appliquer
+    what: >
+      Prepared 5 domain-specific questions for the meeting with
+      Prof. Dupont (hydrology department) about water quality indicators
+      relevant to our contamination risk model. Took structured notes
+      during the meeting and wrote a synthesis document mapping her
+      recommendations to our data schema (e.g., "turbidity alone is
+      insufficient — combine with conductivity for contamination proxy").
+    why: >
+      Communicating with domain experts outside CS requires adapting
+      vocabulary and framing questions in terms they can answer. Applying
+      CS/data skills to the water quality domain required me to bridge
+      the gap between our sensor measurements and the hydrology concepts
+      (NTU thresholds, seasonal baselines) that give them meaning.
+    reflection: >
+      I realized during the meeting that I had framed two questions
+      too technically (asking about "feature importance" when I should
+      have asked "which measurements matter most for safety decisions").
+      Prof. Dupont rephrased them for me, which was a useful lesson in
+      audience adaptation. Next time, I will draft questions in
+      plain language first and only add technical terms if necessary.
+    evidence:
+      - label: "Meeting synthesis"
+        url: "https://github.com/aquasense/docs/blob/main/meetings/dupont-w2.md"
+      - label: "Question preparation"
+        url: "https://github.com/aquasense/docs/blob/main/meetings/dupont-w2-prep.md"
+
+  - title: "Sensor auto-shutdown investigation and fix"
+    date: "2026-03-10"
+    sprint: "W3"
+    competencies:
+      - evaluer
+      - analyser
+    what: >
+      Investigated why the AquaSense probe stops streaming after ~20
+      minutes. Used Wireshark BLE captures to identify a connection
+      parameter update (supervision timeout = 1200 ms) sent by the probe
+      firmware at T+18 min. Confirmed the root cause by writing a test
+      that forces a connection parameter renegotiation. Quantified the
+      issue: 23 out of 25 test runs failed at 18±0.3 min (see timing
+      plot). Filed a detailed bug report with the vendor including
+      packet captures.
+    why: >
+      Evaluating system behavior under real operating conditions is
+      essential before building downstream pipelines that assume
+      continuous data. The 20-minute limit would have silently corrupted
+      our overnight monitoring datasets. Systematic analysis (hypothesis
+      → controlled test → quantified result) is the core of the
+      "évaluer" competency.
+    reflection: >
+      This bug cost the team 3 days. In retrospect, I should have run
+      a 24-hour soak test in W1 before building any pipeline code.
+      Lesson: always test worst-case duration first, especially with
+      hardware you don't control. I've now added a "soak test" column
+      to our hardware acceptance checklist.
+    evidence:
+      - label: "Bug report"
+        url: "https://github.com/aquasense/pipeline/issues/31"
+      - label: "Test script"
+        url: "https://github.com/aquasense/pipeline/blob/main/tests/test_soak.py"
+    figures:
+      - path: "figures/sensor-timeout-plot.png"
+        caption: "BLE disconnection timing across 25 test runs (mean 18.1 min, σ=0.3 min)"
+
+  - title: "Client demo — sprint review presentation"
+    date: "2026-03-11"
+    sprint: "W3"
+    competencies:
+      - communiquer
+      - argumenter
+    what: >
+      Prepared and delivered the W3 sprint review presentation to the
+      client (municipal water authority). Structured the demo around
+      their priorities: (1) data reliability (the auto-shutdown fix),
+      (2) dashboard prototype, (3) next sprint plan. Included a live
+      demo of the BLE acquisition running for 30 minutes to demonstrate
+      the fix. Handled 4 client questions, including one about GDPR
+      implications of storing GPS-tagged water samples.
+    why: >
+      Presenting to a non-technical client requires translating
+      engineering work into business value. I chose to lead with the
+      reliability fix because the client's main concern was "can we
+      trust overnight data?" — framing the auto-shutdown bug as a
+      solved risk rather than a technical detail. Arguing for our
+      architecture choices (SQLite buffer) in terms the client could
+      evaluate (no data loss even without connectivity) is part of
+      the "argumenter" competency.
+    reflection: >
+      The GDPR question caught me off guard — I had not considered that
+      our GPS-tagged samples could constitute personal data if deployed
+      near private properties. I committed to follow up with a privacy
+      impact assessment. This taught me that client presentations are
+      not just about showing work, but about surfacing risks I hadn't
+      considered.
+    evidence:
+      - label: "Presentation slides"
+        url: "https://github.com/aquasense/docs/blob/main/presentations/w3-review.pdf"
+      - label: "Meeting minutes"
+        url: "https://github.com/aquasense/docs/blob/main/meetings/w3-client.md"
+
+  - title: "Dataset preprocessing pipeline — filtering, resampling, format conversion"
+    date: "2026-03-17"
+    sprint: "W4"
+    competencies:
+      - valoriser
+      - appliquer
+    what: >
+      Built the preprocessing pipeline for the first two weeks of field
+      data (1.2 GB raw, 847 MB after cleaning). Steps: (1) removed
+      calibration samples (first 30s of each session), (2) applied
+      a 5-point median filter to remove ADC spikes, (3) resampled from
+      500 Hz to 10 Hz for the dashboard and kept 500 Hz for the ML
+      model, (4) converted from vendor CSV to Parquet with proper
+      column typing. Validated output against manual spot-checks
+      (5 random sessions, <0.1% deviation after filtering).
+    why: >
+      Raw sensor data is unusable without systematic cleaning. The
+      choice of filter type, resampling rate, and output format all
+      affect downstream analysis quality. Documenting these choices
+      (and their quantified impact on data size and signal fidelity)
+      is essential for reproducibility and for the team members who
+      will build models on this data.
+    reflection: >
+      I initially wrote the pipeline as a single script, then refactored
+      it into three composable functions after realizing that the ML team
+      needed the 500 Hz data without resampling. This reinforced a
+      lesson from W2: design for composability before you know all the
+      use cases. Writing the validation spot-checks took 20% of the
+      effort but caught a timezone bug that would have misaligned all
+      timestamps.
+    evidence:
+      - label: "Preprocessing PR"
+        url: "https://github.com/aquasense/pipeline/pull/45"
+      - label: "Validation notebook"
+        url: "https://github.com/aquasense/pipeline/blob/main/notebooks/preprocessing-validation.ipynb"
+    figures:
+      - path: "figures/preprocessing-comparison.png"
+        caption: "Raw vs. filtered signal for session 2026-03-14_09h (pH channel)"
+
+  - title: "Cross-team data integration support"
+    date: "2026-03-18"
+    sprint: "W4"
+    competencies:
+      - valoriser
+      - critiquer
+    what: >
+      Helped Team B (predictive model) integrate the preprocessed
+      Parquet files into their training pipeline. Identified and fixed
+      a schema mismatch (their loader expected ISO timestamps, our
+      export used Unix epochs). Reviewed their feature engineering
+      notebook and suggested adding rolling-window statistics (mean,
+      std over 5-min windows) which they adopted.
+    why: >
+      Working across team boundaries requires understanding both the
+      data producer's and consumer's perspectives. The schema mismatch
+      was a concrete example of why data contracts matter — I should
+      have published a schema specification in W2 instead of assuming
+      the Parquet column names were self-documenting.
+    reflection: >
+      This cross-team work forced me to balance depth (finishing my own
+      preprocessing improvements) with breadth (unblocking another team).
+      I chose breadth because their sprint deadline was closer. In
+      retrospect, I should have allocated time for integration support
+      in our sprint planning — treating cross-team dependencies as
+      explicit tasks rather than ad-hoc interruptions.
+    evidence:
+      - label: "Schema fix PR"
+        url: "https://github.com/aquasense/pipeline/pull/48"
+      - label: "Feature engineering review"
+        url: "https://github.com/aquasense/ml-model/pull/7#pullrequestreview-123456"
