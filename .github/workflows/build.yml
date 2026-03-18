@@ -12,19 +12,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: typst-community/setup-typst@v4
+      - uses: prefix-dev/setup-pixi@v0.8.8
+        with:
+          locked: false
       - name: Build good example
         run: |
           cp portfolio.example-good.yaml portfolio.yaml
           cp questions.example-good.yaml questions.yaml
-          python3 check-links.py
-          typst compile portfolio.typ portfolio-example-good.pdf
+          pixi run build
+          mv portfolio.pdf portfolio-example-good.pdf
       - name: Build bad example
         run: |
           cp portfolio.example-bad.yaml portfolio.yaml
           cp questions.example-bad.yaml questions.yaml
-          python3 check-links.py || true
-          typst compile portfolio.typ portfolio-example-bad.pdf
+          pixi run build
+          mv portfolio.pdf portfolio-example-bad.pdf
       - uses: actions/upload-artifact@v4
         with:
           name: portfolio-examples

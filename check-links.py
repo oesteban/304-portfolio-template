@@ -9,7 +9,9 @@ def extract_urls(path="portfolio.yaml"):
     urls = set()
     with open(path) as f:
         for match in re.finditer(r'url:\s*["\']?([^"\'#\s]+)', f.read()):
-            urls.add(match.group(1))
+            candidate = match.group(1)
+            if candidate.startswith(("http://", "https://")):
+                urls.add(candidate)
     return sorted(urls)
 
 

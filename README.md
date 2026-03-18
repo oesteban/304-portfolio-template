@@ -52,9 +52,16 @@ sum to 1.0 — the template warns if they don't.
 
 ## Building the PDF locally
 
+This project uses [pixi](https://pixi.sh) to manage dependencies (Typst, Python).
+
 ```bash
-# Install Typst: https://typst.app
-typst compile portfolio.typ portfolio.pdf
+# Install pixi (if not already installed): https://pixi.sh
+# Then build the portfolio PDF:
+pixi run build
+
+# Or step by step:
+pixi run check-links    # check evidence URLs → broken_links.yaml
+pixi run -- typst compile portfolio.typ portfolio.pdf
 ```
 
 The PDF is also built automatically on every push via GitHub Actions.
