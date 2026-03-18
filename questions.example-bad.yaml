@@ -1,0 +1,34 @@
+# Example: poorly crafted hiring questions (fictional project "AquaSense")
+# Copy this file to questions.yaml alongside portfolio.example-bad.yaml.
+#
+# Anti-patterns demonstrated:
+#   - Questions are generic and not tied to portfolio entries
+#   - Some answers are empty (template flags these)
+#   - Answers are vague, lack specifics, and don't reference real work
+#   - Missing weeks (no W4 questions, matching the missing W4 entries)
+#   - Some items are bare strings (no answer field at all)
+
+weeks:
+  - week: 1
+    items:
+      - question: "What are your strengths?"
+        answer: "I am a team player and I work hard."
+      - question: "Why did you choose this project?"
+        answer: ""
+      - "What is your experience with programming?"
+  - week: 2
+    items:
+      - question: "Do you like working in a team?"
+        answer: "Yes, I like working in a team."
+      - question: "What tools do you use?"
+        answer: "I use VS Code and GitHub."
+      - question: "How do you handle deadlines?"
+        answer: ""
+  - week: 3
+    items:
+      - question: "What did you learn this week?"
+        answer: "I learned a lot of things."
+      - question: "Are you good at communication?"
+        answer: "Yes."
+      - question: "What is your biggest weakness?"
+        answer: ""

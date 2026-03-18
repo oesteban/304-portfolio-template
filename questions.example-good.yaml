@@ -1,0 +1,115 @@
+# Example: well-crafted hiring questions (fictional project "AquaSense")
+# Copy this file to questions.yaml alongside portfolio.example-good.yaml.
+#
+# Key patterns demonstrated:
+#   - Questions are relevant to that week's portfolio entries
+#   - Questions are phrased as an interviewer would ask them
+#   - Answers are concrete, show self-awareness, and reference real experience
+#   - 3 questions per week, all weeks covered
+
+weeks:
+  - week: 1
+    items:
+      - question: "You reverse-engineered a BLE protocol. How did you validate that your driver handles all edge cases?"
+        answer: >
+          I captured real BLE traffic with Wireshark and compared the raw bytes
+          against my parser output for each of the 6 documented payload variants.
+          I also fuzz-tested with randomized payloads to confirm the driver fails
+          gracefully on malformed data instead of crashing. Two undocumented
+          variants surfaced only during hardware testing, which taught me that
+          documentation alone is insufficient for validation.
+      - question: "How do you decide between async standups and synchronous daily meetings?"
+        answer: >
+          It depends on the team's timezone spread and the project phase. For our
+          team (all in the same timezone, early project phase), I argued for async
+          because the overhead of a daily video call outweighs the benefit when
+          most updates are informational. However, I would switch to synchronous
+          meetings during high-coordination phases like integration sprints, where
+          back-and-forth decisions happen faster in real time.
+      - question: "Describe a situation where you had to set up a team process from scratch. What worked and what didn't?"
+        answer: >
+          In this project, I set up our Scrum process: rotating SM/PO roles,
+          GitHub Projects board, and async standups. The board worked well because
+          the columns matched our actual workflow. What didn't work was the async
+          standup format — two teammates rarely posted, so I didn't catch their
+          blockers early. Next time I would add a "no update = blocker check-in"
+          rule instead of assuming silence means progress.
+  - week: 2
+    items:
+      - question: "Why did you choose SQLite as your edge buffer instead of streaming directly via MQTT?"
+        answer: >
+          Our field probes lose connectivity for hours at a time. MQTT requires
+          a persistent connection or a local broker with disk persistence, which
+          adds operational complexity for a single-sensor setup. SQLite gives us
+          a reliable write-ahead log on the device with zero infrastructure. I
+          documented a decision boundary in the ADR: if we add concurrent sensors,
+          we should re-evaluate with DuckDB for its better concurrent write support.
+      - question: "How do you prepare for a meeting with a domain expert who doesn't speak your technical language?"
+        answer: >
+          I draft questions in plain language first, avoiding jargon. For the
+          hydrology meeting, I initially wrote "which features have the highest
+          importance for contamination prediction" — but rephrased it to "which
+          measurements matter most for safety decisions." I also read two of the
+          expert's recent papers to understand their vocabulary and priorities,
+          so I could frame questions in terms they care about.
+      - question: "How do you document architectural decisions so they remain useful 6 months later?"
+        answer: >
+          I use Architecture Decision Records (ADRs) with a fixed template:
+          context, decision, consequences, and — crucially — a "revisit when"
+          section that states the conditions under which the decision should be
+          reconsidered. For example, our SQLite ADR says "revisit if concurrent
+          sensor writes exceed 100/s." This prevents the document from becoming
+          a historical artifact and makes it a living guardrail.
+  - week: 3
+    items:
+      - question: "Walk me through how you debugged the 20-minute sensor shutdown."
+        answer: >
+          I started with the hypothesis that it was a firmware timeout. I ran
+          25 back-to-back sessions logging BLE events with Wireshark and found
+          that a connection parameter update (supervision timeout = 1200 ms) was
+          sent by the probe at T+18 min consistently (σ=0.3 min). I then wrote
+          a test that forces a connection parameter renegotiation to confirm the
+          root cause. The fix was a keepalive that renegotiates parameters before
+          the timeout fires.
+      - question: "How do you adapt a technical presentation for a non-technical audience?"
+        answer: >
+          I structure around their priorities, not ours. For the water authority
+          demo, I led with "your overnight data is now reliable" (the auto-shutdown
+          fix) because their concern was trust, not BLE internals. I showed a
+          30-minute live acquisition instead of explaining the fix technically.
+          When they asked about GDPR for GPS-tagged samples — a risk I hadn't
+          considered — I committed to a follow-up rather than improvising an answer.
+      - question: "What is your approach to testing hardware you don't control?"
+        answer: >
+          Always run a worst-case-duration soak test before building any software
+          on top of it. In this project, we skipped that step and lost 3 days to
+          the auto-shutdown bug. Now I have a hardware acceptance checklist that
+          includes: 24-hour soak test, power-cycle recovery, and out-of-range
+          behavior. I'd rather spend a day testing upfront than a week debugging
+          downstream.
+  - week: 4
+    items:
+      - question: "What criteria did you use to choose your data preprocessing parameters (filter type, resampling rate)?"
+        answer: >
+          The 5-point median filter was chosen because ADC spikes are isolated
+          outliers (not bursts), and median filters preserve edges better than
+          moving averages for this pattern. The 10 Hz resampling target came
+          from the dashboard's refresh rate — anything higher would be
+          downsampled at display time anyway. I kept the 500 Hz stream for the
+          ML team who need the full bandwidth for peak detection.
+      - question: "How do you handle cross-team dependencies in sprint planning?"
+        answer: >
+          After this sprint, I would treat them as explicit backlog items with
+          estimated effort, not as ad-hoc interruptions. When Team B needed
+          help integrating our Parquet files, I dropped my own preprocessing
+          work because their deadline was closer. That was the right call, but
+          it shouldn't have been a surprise — I should have published a data
+          schema contract in W2 so the integration would have been self-service.
+      - question: "How do you validate that your preprocessing pipeline doesn't corrupt the data?"
+        answer: >
+          I spot-checked 5 random sessions by comparing raw vs. filtered values
+          at known timestamps, confirming <0.1% deviation. This also caught a
+          timezone bug that would have misaligned all timestamps by 1 hour. The
+          validation took 20% of the total effort but was non-negotiable — silent
+          data corruption in a preprocessing pipeline propagates to every
+          downstream analysis.
