@@ -8,10 +8,8 @@ platforms = ["linux-64", "osx-arm64", "osx-64", "win-64"]
 [dependencies]
 typst = ">=0.14"
 python = ">=3.11"
-pyyaml = ">=6"
 
 [tasks]
 check-links = "python check-links.py || true"
-render-mermaid = "python render-mermaid.py"
-build = { cmd = "typst compile portfolio.typ portfolio.pdf", depends-on = ["check-links", "render-mermaid"] }
-clean = "rm -f portfolio.pdf broken_links.yaml _portfolio.yaml"
+build = { cmd = "typst compile portfolio.typ portfolio.pdf", depends-on = ["check-links"] }
+clean = "rm -f portfolio.pdf broken_links.yaml"

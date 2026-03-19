@@ -5,7 +5,7 @@
 
 // ── Data loading ──────────────────────────────────────────────
 #let student       = yaml("student.yaml")
-#let portfolio     = yaml("_portfolio.yaml")
+#let portfolio     = yaml("portfolio.yaml")
 #let questions     = yaml("questions.yaml")
 #let broken-links  = yaml("broken_links.yaml")
 
