@@ -31,7 +31,7 @@
   ],
 )
 
-#set text(font: ("Helvetica Neue", "Helvetica", "DejaVu Sans"), size: 10pt, lang: "en")
+#set text(font: ("Arimo", "Helvetica Neue", "Helvetica", "DejaVu Sans"), size: 10pt, lang: "en")
 #set par(justify: true, leading: 0.65em)
 
 // ── Helper: skill bar ─────────────────────────────────────────
