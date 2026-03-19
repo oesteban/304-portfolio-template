@@ -1,8 +1,6 @@
 // Portfolio CV Template — Module 304 (Medical Informatics)
 // Reads structured YAML files and produces a professional A4 PDF.
 
-#import "@preview/mmdr:0.2.1": mermaid
-
 // ── Data loading ──────────────────────────────────────────────
 #let student       = yaml("student.yaml")
 #let portfolio     = yaml("_portfolio.yaml")
@@ -15,51 +13,9 @@
 #let accent-prof = rgb("#9333ea")   // purple
 #let accent-q    = rgb("#64748b")   // slate
 
-// ── Competency enum → axis mapping ──────────────────────────
-#let competency-axis = (
-  analyser:    "cs",
-  concevoir:   "cs",
-  implementer: "cs",
-  evaluer:     "cs",
-  valoriser:   "data",
-  orchestrer:  "data",
-  appliquer:   "data",
-  communiquer: "prof",
-  faciliter:   "prof",
-  argumenter:  "prof",
-  critiquer:   "prof",
-)
-
-#let competency-labels = (
-  analyser:    "Analyser un problème informatique complexe",
-  concevoir:   "Concevoir une solution théorique modélisée",
-  implementer: "Implémenter une approche théorique modélisée",
-  evaluer:     "Évaluer un système informatique",
-  valoriser:   "Valoriser des ensembles de données hétérogènes",
-  orchestrer:  "Orchestrer un processus de traitement de données",
-  appliquer:   "Appliquer l'ingénierie informatique aux données",
-  communiquer: "Communiquer clairement et efficacement",
-  faciliter:   "Adopter une posture professionnelle facilitante",
-  argumenter:  "Argumenter ses opinions et ses choix",
-  critiquer:   "Critiquer le déroulement d'une production",
-)
-
+// ── Axis colours & labels ────────────────────────────────────
 #let axis-color = (cs: accent-cs, data: accent-data, prof: accent-prof)
 #let axis-label = (cs: "CS", data: "Data", prof: "Soft-skills")
-
-// ── Helper: derive axis weights from competencies list ──────
-#let derive-skills(comps) = {
-  let n = comps.len()
-  if n == 0 { return (cs_engineer: 0, data_engineer: 0, professionalism: 0) }
-  let cs = 0; let dt = 0; let pr = 0
-  for c in comps {
-    let ax = competency-axis.at(c, default: "cs")
-    if ax == "cs"   { cs += 1 }
-    if ax == "data" { dt += 1 }
-    if ax == "prof" { pr += 1 }
-  }
-  (cs_engineer: cs / n, data_engineer: dt / n, professionalism: pr / n)
-}
 
 // ── Page & text setup ─────────────────────────────────────────
 #set page(
@@ -103,35 +59,6 @@
   )
 }
 
-// ── Helper: render text with inline mermaid blocks ────────────
-#let mermaid-re = regex("(?s)```mermaid[ \t]*\n(.*?)```")
-
-#let render-field(content) = {
-  if content == none or content == "" { return }
-  let ms = content.matches(mermaid-re)
-  if ms.len() == 0 {
-    text(size: 9.5pt, content)
-  } else {
-    let pos = 0
-    for m in ms {
-      let before = content.slice(pos, m.start)
-      if before.trim() != "" {
-        text(size: 9.5pt, before.trim())
-        v(4pt)
-      }
-      align(center,
-        block(width: 85%, mermaid(m.captures.first()))
-      )
-      v(4pt)
-      pos = m.end
-    }
-    let after = content.slice(pos)
-    if after.trim() != "" {
-      text(size: 9.5pt, after.trim())
-    }
-  }
-}
-
 // ── Helper: entry block ───────────────────────────────────────
 #let entry-block(e) = {
   // Title row
@@ -144,13 +71,9 @@
   )
   v(3pt)
 
-  // Skill weights — prefer competencies (new) over skills (legacy)
+  // Skill weights
   {
-    let skills = if "competencies" in e and e.competencies != none and e.competencies.len() > 0 {
-      derive-skills(e.competencies)
-    } else if "skills" in e {
-      e.skills
-    } else { none }
+    let skills = if "skills" in e { e.skills } else { none }
     if skills != none {
       skill-bar(skills)
       // Warn if weights don't sum to 1.0 (tolerance ±0.05)
@@ -166,27 +89,10 @@
   }
   v(2pt)
 
-  // Competency pills
-  if "competencies" in e and e.competencies != none and e.competencies.len() > 0 {
-    for c in e.competencies {
-      let ax = competency-axis.at(c, default: "cs")
-      let col = axis-color.at(ax)
-      box(
-        inset: (x: 5pt, y: 2pt),
-        radius: 3pt,
-        fill: col.lighten(85%),
-        stroke: 0.5pt + col.lighten(40%),
-        text(size: 7.5pt, weight: "medium", fill: col.darken(15%), c),
-      )
-      h(3pt)
-    }
-    v(2pt)
-  }
-
   // What
   if "what" in e and e.what != none and e.what != "" {
     text(weight: "semibold", size: 9pt, fill: luma(80), [What: ])
-    render-field(e.what)
+    text(size: 9.5pt, e.what)
     v(3pt)
   } else {
     text(size: 9pt, fill: rgb("#dc2626"),
@@ -197,7 +103,7 @@
   // Why
   if "why" in e and e.why != none and e.why != "" {
     text(weight: "semibold", size: 9pt, fill: luma(80), [Why: ])
-    render-field(e.why)
+    text(size: 9.5pt, e.why)
     v(3pt)
   } else {
     text(size: 9pt, fill: rgb("#dc2626"),
@@ -208,7 +114,7 @@
   // Reflection
   if "reflection" in e and e.reflection != none and e.reflection != "" {
     text(weight: "semibold", size: 9pt, fill: luma(80), [Reflection: ])
-    render-field(e.reflection)
+    text(size: 9.5pt, e.reflection)
     v(3pt)
   } else {
     text(size: 9pt, fill: rgb("#dc2626"),
