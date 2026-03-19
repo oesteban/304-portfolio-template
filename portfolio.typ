@@ -5,7 +5,7 @@
 
 // ── Data loading ──────────────────────────────────────────────
 #let student       = yaml("student.yaml")
-#let portfolio     = yaml("portfolio.yaml")
+#let portfolio     = yaml("_portfolio.yaml")
 #let questions     = yaml("questions.yaml")
 #let broken-links  = yaml("broken_links.yaml")
 
@@ -15,51 +15,9 @@
 #let accent-prof = rgb("#9333ea")   // purple
 #let accent-q    = rgb("#64748b")   // slate
 
-// ── Competency enum → axis mapping ──────────────────────────
-#let competency-axis = (
-  analyser:    "cs",
-  concevoir:   "cs",
-  implementer: "cs",
-  evaluer:     "cs",
-  valoriser:   "data",
-  orchestrer:  "data",
-  appliquer:   "data",
-  communiquer: "prof",
-  faciliter:   "prof",
-  argumenter:  "prof",
-  critiquer:   "prof",
-)
-
-#let competency-labels = (
-  analyser:    "Analyser un problème informatique complexe",
-  concevoir:   "Concevoir une solution théorique modélisée",
-  implementer: "Implémenter une approche théorique modélisée",
-  evaluer:     "Évaluer un système informatique",
-  valoriser:   "Valoriser des ensembles de données hétérogènes",
-  orchestrer:  "Orchestrer un processus de traitement de données",
-  appliquer:   "Appliquer l'ingénierie informatique aux données",
-  communiquer: "Communiquer clairement et efficacement",
-  faciliter:   "Adopter une posture professionnelle facilitante",
-  argumenter:  "Argumenter ses opinions et ses choix",
-  critiquer:   "Critiquer le déroulement d'une production",
-)
-
+// ── Axis colours & labels ────────────────────────────────────
 #let axis-color = (cs: accent-cs, data: accent-data, prof: accent-prof)
 #let axis-label = (cs: "CS", data: "Data", prof: "Soft-skills")
-
-// ── Helper: derive axis weights from competencies list ──────
-#let derive-skills(comps) = {
-  let n = comps.len()
-  if n == 0 { return (cs_engineer: 0, data_engineer: 0, professionalism: 0) }
-  let cs = 0; let dt = 0; let pr = 0
-  for c in comps {
-    let ax = competency-axis.at(c, default: "cs")
-    if ax == "cs"   { cs += 1 }
-    if ax == "data" { dt += 1 }
-    if ax == "prof" { pr += 1 }
-  }
-  (cs_engineer: cs / n, data_engineer: dt / n, professionalism: pr / n)
-}
 
 // ── Page & text setup ─────────────────────────────────────────
 #set page(
@@ -144,13 +102,9 @@
   )
   v(3pt)
 
-  // Skill weights — prefer competencies (new) over skills (legacy)
+  // Skill weights
   {
-    let skills = if "competencies" in e and e.competencies != none and e.competencies.len() > 0 {
-      derive-skills(e.competencies)
-    } else if "skills" in e {
-      e.skills
-    } else { none }
+    let skills = if "skills" in e { e.skills } else { none }
     if skills != none {
       skill-bar(skills)
       // Warn if weights don't sum to 1.0 (tolerance ±0.05)
@@ -165,23 +119,6 @@
     }
   }
   v(2pt)
-
-  // Competency pills
-  if "competencies" in e and e.competencies != none and e.competencies.len() > 0 {
-    for c in e.competencies {
-      let ax = competency-axis.at(c, default: "cs")
-      let col = axis-color.at(ax)
-      box(
-        inset: (x: 5pt, y: 2pt),
-        radius: 3pt,
-        fill: col.lighten(85%),
-        stroke: 0.5pt + col.lighten(40%),
-        text(size: 7.5pt, weight: "medium", fill: col.darken(15%), c),
-      )
-      h(3pt)
-    }
-    v(2pt)
-  }
 
   // What
   if "what" in e and e.what != none and e.what != "" {
