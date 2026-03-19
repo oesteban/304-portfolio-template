@@ -1,6 +1,8 @@
 // Portfolio CV Template — Module 304 (Medical Informatics)
 // Reads structured YAML files and produces a professional A4 PDF.
 
+#import "@preview/mmdr:0.2.1": mermaid
+
 // ── Data loading ──────────────────────────────────────────────
 #let student       = yaml("student.yaml")
 #let portfolio     = yaml("portfolio.yaml")
@@ -101,6 +103,35 @@
   )
 }
 
+// ── Helper: render text with inline mermaid blocks ────────────
+#let mermaid-re = regex("(?s)```mermaid[ \t]*\n(.*?)```")
+
+#let render-field(content) = {
+  if content == none or content == "" { return }
+  let ms = content.matches(mermaid-re)
+  if ms.len() == 0 {
+    text(size: 9.5pt, content)
+  } else {
+    let pos = 0
+    for m in ms {
+      let before = content.slice(pos, m.start)
+      if before.trim() != "" {
+        text(size: 9.5pt, before.trim())
+        v(4pt)
+      }
+      align(center,
+        block(width: 85%, mermaid(m.captures.first()))
+      )
+      v(4pt)
+      pos = m.end
+    }
+    let after = content.slice(pos)
+    if after.trim() != "" {
+      text(size: 9.5pt, after.trim())
+    }
+  }
+}
+
 // ── Helper: entry block ───────────────────────────────────────
 #let entry-block(e) = {
   // Title row
@@ -155,7 +186,7 @@
   // What
   if "what" in e and e.what != none and e.what != "" {
     text(weight: "semibold", size: 9pt, fill: luma(80), [What: ])
-    text(size: 9.5pt, e.what)
+    render-field(e.what)
     v(3pt)
   } else {
     text(size: 9pt, fill: rgb("#dc2626"),
@@ -166,7 +197,7 @@
   // Why
   if "why" in e and e.why != none and e.why != "" {
     text(weight: "semibold", size: 9pt, fill: luma(80), [Why: ])
-    text(size: 9.5pt, e.why)
+    render-field(e.why)
     v(3pt)
   } else {
     text(size: 9pt, fill: rgb("#dc2626"),
@@ -177,7 +208,7 @@
   // Reflection
   if "reflection" in e and e.reflection != none and e.reflection != "" {
     text(weight: "semibold", size: 9pt, fill: luma(80), [Reflection: ])
-    text(size: 9.5pt, e.reflection)
+    render-field(e.reflection)
     v(3pt)
   } else {
     text(size: 9pt, fill: rgb("#dc2626"),
