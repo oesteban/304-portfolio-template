@@ -125,19 +125,20 @@
   // Evidence links
   if "evidence" in e and e.evidence != none and e.evidence.len() > 0 {
     text(weight: "semibold", size: 9pt, fill: luma(80), [Evidence: ])
-    for ev in e.evidence {
-      let target = ev.at("url", default: ev.at("path", default: ""))
-      if target != "" and broken-links != none and target in broken-links {
-        text(size: 9pt, fill: rgb("#dc2626"),
-          [⚠ #ev.label #text(size: 8pt, weight: "semibold")[(broken link)]])
-        [ ]
-      } else if target != "" {
-        [#link(target)[#text(size: 9pt, fill: accent-cs, ev.label)]  ]
-      } else {
-        text(size: 9pt, ev.label)
-        [ ]
-      }
-    }
+    v(1pt)
+    list(
+      marker: [•],
+      ..e.evidence.map(ev => {
+        let target = ev.at("url", default: ev.at("path", default: ""))
+        if target != "" and broken-links != none and target in broken-links {
+          [⚠ #ev.label #text(size: 8pt, weight: "semibold")[(broken link)]]
+        } else if target != "" {
+          [#link(target)[#text(size: 9pt, fill: accent-cs, ev.label)]]
+        } else {
+          [#{ev.label}]
+        }
+      })
+    )
     v(2pt)
   } else {
     text(size: 9pt, fill: rgb("#dc2626"),
