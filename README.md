@@ -9,6 +9,7 @@ This repository contains your competency portfolio for module 304.
 | `student.yaml` | Your name, program, module, project metadata |
 | `portfolio.yaml` | All portfolio entries (single file) |
 | `questions.yaml` | Weekly hiring-style questions |
+| `known_urls.yaml`| urls skipping the `check-links.py`verification
 | `broken_links.yaml` | Auto-detected broken evidence links |
 | `portfolio.typ` | Typst template (do not edit) |
 | `.github/workflows/build.yml` | Builds PDF on push |
