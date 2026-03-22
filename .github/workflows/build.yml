@@ -16,16 +16,24 @@ jobs:
         with:
           locked: false
       - name: Build good example
+        env:
+          GITHUB_SERVER_URL: ${{ github.server_url }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_SHA: ${{ github.sha }}
         run: |
           cp portfolio.example-good.yaml portfolio.yaml
           cp questions.example-good.yaml questions.yaml
-          pixi run build
+          pixi run build-ci
           mv portfolio.pdf portfolio-example-good.pdf
       - name: Build bad example
+        env:
+          GITHUB_SERVER_URL: ${{ github.server_url }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_SHA: ${{ github.sha }}
         run: |
           cp portfolio.example-bad.yaml portfolio.yaml
           cp questions.example-bad.yaml questions.yaml
-          pixi run build
+          pixi run build-ci
           mv portfolio.pdf portfolio-example-bad.pdf
       - uses: actions/upload-artifact@v4
         with:
