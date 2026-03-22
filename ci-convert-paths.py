@@ -22,7 +22,7 @@ def main():
     with open("_portfolio.yaml") as f:
         portfolio = yaml.safe_load(f)
 
-    # generate the github base url
+    # Generate the github base url
     base_url = f"{github_server}/{github_repo}/blob/{github_sha}"
     converted = 0
 
