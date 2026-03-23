@@ -59,7 +59,7 @@ def check_url(url):
 
 def main():
     path = sys.argv[1] if len(sys.argv) > 1 else "portfolio.yaml"
-    allowlist = os.path.join(os.path.dirname(path), "..", "known_urls.yaml")
+    allowlist = os.path.join(os.path.dirname(path), "known_urls.yaml")
     prefixes, exact = load_allowlist(allowlist)
 
     urls = extract_urls(path)
