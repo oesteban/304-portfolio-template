@@ -12,6 +12,8 @@ pyyaml = ">=6"
 
 [tasks]
 check-links = "python check-links.py || true"
+ci-convert-paths = "python ci-convert-paths.py"
 render-mermaid = "python render-mermaid.py"
 build = { cmd = "typst compile portfolio.typ portfolio.pdf", depends-on = ["check-links", "render-mermaid"] }
+build-ci = { cmd = "typst compile portfolio.typ portfolio.pdf", depends-on = ["check-links", "render-mermaid", "ci-convert-paths"] }
 clean = "rm -f portfolio.pdf broken_links.yaml _portfolio.yaml"
