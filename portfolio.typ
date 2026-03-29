@@ -62,13 +62,34 @@
 // ── Helper: entry block ───────────────────────────────────────
 #let entry-block(e) = {
   // Title row
-  grid(
-    columns: (1fr, auto),
-    align: (left, right),
-    text(weight: "bold", size: 11pt, e.title),
-    text(size: 9pt, fill: luma(100),
-      [#e.at("sprint", default: "") — #e.date]),
-  )
+  {
+     let sprint_label = {
+       let sprint_entry = e.at("sprint", default: "")
+
+       if type(sprint_entry) == array { sprint_entry.join(" / ")} else {sprint_entry}
+     }
+
+     let date_label = {
+       let date_entry = e.at("date", default: "")
+
+       if type(date_entry) == dictionary {
+         date_entry.at("start", default: "") + " → " + date_entry.at("end", default: "")
+       } else {
+         date_entry
+       }
+     }
+
+     grid(
+       columns: (1fr, auto),
+       align: (left, right),
+       text(weight: "bold", size: 11pt, e.title),
+       block(
+         inset: (left: 9pt),
+         text(size: 9pt, fill: luma(100),
+         [#sprint_label — #date_label]),
+       )
+     )
+  }
   v(3pt)
 
   // Skill weights
