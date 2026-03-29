@@ -23,8 +23,14 @@ Entry format:
 
 ```yaml
   - title: "Short descriptive title"
-    date: "2026-03-06"
-    sprint: "W3"
+    date:
+      start: "2026-03-06"
+      end: "2026-03-08"
+    # if there is a single date, this is also possible
+    # date: "2026-03-06"
+    sprint: [W3, W4]
+    # if there is a single sprint, this is also possible
+    # sprint: W3
     skills:
       cs_engineer: 0.5
       data_engineer: 0.5

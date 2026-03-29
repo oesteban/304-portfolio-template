@@ -19,8 +19,10 @@
 
 entries:
   - title: "BLE sensor protocol analysis and driver implementation"
-    date: "2026-02-24"
-    sprint: "W1"
+    date:
+      start: "2026-02-18"
+      end: "2026-02-24"
+    sprint: [W1, W2]
     skills:
       cs_engineer: 0.7
       data_engineer: 0.3
